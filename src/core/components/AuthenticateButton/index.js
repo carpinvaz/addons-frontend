@@ -36,13 +36,18 @@ type Props = {|
   noIcon?: boolean,
 |};
 
-type InternalProps = {|
-  ...Props,
+type StateMappedProps = {|
   api: ApiState,
   handleLogIn: HandleLogInFunc,
+  siteIsReadOnly: boolean,
+  siteUser: UserType | null,
+|};
+
+type InternalProps = {|
+  ...Props,
+  ...StateMappedProps,
   i18n: I18nType,
   location: ReactRouterLocationType,
-  siteUser: UserType | null,
 |};
 
 export class AuthenticateButtonBase extends React.Component<InternalProps> {
@@ -73,6 +78,7 @@ export class AuthenticateButtonBase extends React.Component<InternalProps> {
       logInText,
       logOutText,
       noIcon,
+      siteIsReadOnly,
       siteUser,
     } = this.props;
 
@@ -90,6 +96,7 @@ export class AuthenticateButtonBase extends React.Component<InternalProps> {
         href={`#${siteUser ? 'logout' : 'login'}`}
         buttonType={buttonType}
         className={className}
+        disabled={siteIsReadOnly}
         onClick={this.onClick}
         micro
       >
@@ -99,12 +106,6 @@ export class AuthenticateButtonBase extends React.Component<InternalProps> {
     );
   }
 }
-
-type StateMappedProps = {|
-  api: ApiState,
-  handleLogIn: HandleLogInFunc,
-  siteUser: UserType | null,
-|};
 
 export const mapStateToProps = (
   state: AppState,
@@ -118,6 +119,7 @@ export const mapStateToProps = (
   return {
     api: state.api,
     handleLogIn: ownProps.handleLogIn || defaultHandleLogIn,
+    siteIsReadOnly: state.site.readOnly,
     siteUser: getCurrentUser(state.users),
   };
 };
